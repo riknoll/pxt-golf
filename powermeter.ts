@@ -66,9 +66,9 @@ class PowerMeter {
 
         this.clear();
 
-        this.startPoint = this.currentPower;
         this.powerChangeRate = Math.abs(this.powerChangeRate);
         this.currentPower = Math.randomRange(10, 30);
+        this.startPoint = this.currentPower;
 
         this.renderable = scene.createRenderable(
             zindex.POWER_BAR,

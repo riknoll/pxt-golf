@@ -36,15 +36,12 @@ namespace golf {
                 zindex.PROJECTED_ANGLE,
                 function () {
                     if (this.ball && this.target) {
-                        const diffY = this.target.bottom - this.ball.y;
-                        const diffX = this.target.x - this.ball.x;
-
-                        const angleToTarget = Math.atan2(diffY, diffX);
+                        const angle = angleToTarget(this.ball, this.target);
                         screen.drawLine(
                             this.ball.x,
                             this.ball.y,
-                            this.ball.x + 10 * Math.cos(angleToTarget),
-                            this.ball.y + 10 * Math.sin(angleToTarget),
+                            this.ball.x + 10 * Math.cos(angle),
+                            this.ball.y + 10 * Math.sin(angle),
                             1
                         );
                     }
@@ -64,11 +61,10 @@ namespace golf {
                     pm.action();
                     if (pm.finished()) {
                         const acc = pm.accuracy()
-                        const diffY = this.target.bottom - this.ball.y;
-                        const diffX = this.target.x - this.ball.x;
+                        const angle = angleToTarget(this.ball, this.target);
+                        const randomVariance = Math.randomRange(-acc, acc) * (Math.PI / 180)
 
-                        const angleToTarget = Math.atan2(diffY, diffX) / (Math.PI / 180);
-                        this.hitBall(pm.power(), angleToTarget + Math.randomRange(-acc, acc));
+                        this.hitBall(pm.power(), angle + randomVariance);
                         pm.clear();
                         if (this.target) controller.moveSprite(this.target);
                     }
@@ -77,8 +73,15 @@ namespace golf {
 
             controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
                 PowerMeter.getInstance().clear();
-                if (this.target) controller.moveSprite(this.target)
+                if (this.target) controller.moveSprite(this.target);
             });
+
+            function angleToTarget(ball: Sprite, target: Sprite) {
+                const diffY = target.bottom - ball.y - 1;
+                const diffX = target.x - ball.x;
+
+                return Math.atan2(diffY, diffX);
+            }
         }
 
         loadCourse(c: Course) {
@@ -139,13 +142,16 @@ namespace golf {
                 . . f 1 1 1 f . .
                 . . . f 1 f . . .
                 . . . . f . . . .
+                . . . d 1 d . . .
+                . . . . d . . . .
             `);
 
             this.target.setFlag(SpriteFlag.StayInScreen, true);
             this.target.setFlag(SpriteFlag.Ghost, true);
             this.target.flags |= SpriteStateFlag.NoCollide;
+            this.target.z = zindex.TARGET;
             if (this.ball) {
-                this.target.bottom = this.ball.y;
+                this.target.bottom = this.ball.y + 1;
                 this.target.left = this.ball.x + 5;
             }
             controller.moveSprite(this.target);
@@ -166,8 +172,8 @@ namespace golf {
 
             this.strokeCount++;
 
-            const vx = Math.cos(angleDegrees * (Math.PI / 180)) * speed;
-            const vy = Math.sin(angleDegrees * (Math.PI / 180)) * speed;
+            const vx = Math.cos(angleDegrees) * speed;
+            const vy = Math.sin(angleDegrees) * speed;
 
             this.ball.setVelocity(vx, vy);
         }
