@@ -12,7 +12,8 @@
         "vector.ts",
         "course.ts",
         "powermeter.ts",
-        "constants.ts"
+        "constants.ts",
+        "movingPlatform.ts"
     ],
     "testFiles": [
         "test.ts"
