@@ -8,7 +8,9 @@
     "files": [
         "README.md",
         "main.ts",
-        "physics.ts"
+        "physics.ts",
+        "powermeter.ts",
+        "constants.ts"
     ],
     "testFiles": [
         "test.ts"
