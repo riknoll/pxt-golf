@@ -7,6 +7,7 @@ namespace golf {
     export class Game {
         protected ball: Sprite;
         protected hole: Sprite;
+        protected target: Sprite;
         protected strokeCount: number;
         protected putting: boolean;
         protected hud: scene.Renderable;
@@ -25,20 +26,25 @@ namespace golf {
                 () => !PowerMeter.getInstance().active()
             );
 
-            let angle = 0;
+            scene.createRenderable(
+                zindex.PROJECTED_ANGLE,
+                function () {
+                    if (this.ball && this.target) {
+                        const diffY = this.target.bottom - this.ball.y;
+                        const diffX = this.target.x - this.ball.x;
 
-            game.onShade(function () {
-                const pm = PowerMeter.getInstance();
-                if (!pm.active()) {
-                    if (controller.left.isPressed()) {
-                        angle--;
+                        const angleToTarget = Math.atan2(diffY, diffX);
+                        screen.drawLine(
+                            this.ball.x,
+                            this.ball.y,
+                            this.ball.x + 10 * Math.cos(angleToTarget),
+                            this.ball.y + 10 * Math.sin(angleToTarget),
+                            1
+                        );
                     }
-                    if (controller.right.isPressed()) {
-                        angle++;
-                    }
-                }
-                screen.drawLine(this.ball.x, this.ball.y, this.ball.x + 15 * Math.cos(angle * (Math.PI / 180)), this.ball.y + 15 * Math.sin(angle * (Math.PI / 180)), 1)
-            })
+                },
+                () => this.putting
+            );
 
             controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
                 const pm = PowerMeter.getInstance();
@@ -47,18 +53,25 @@ namespace golf {
                 }
                 if (!pm.active()) {
                     pm.start();
+                    if (this.target) controller.moveSprite(this.target, 0, 0);
                 } else if (!pm.finished()) {
                     pm.action();
                     if (pm.finished()) {
                         const acc = pm.accuracy()
-                        this.hitBall(pm.power(), angle + Math.randomRange(-acc, acc));
+                        const diffY = this.target.bottom - this.ball.y;
+                        const diffX = this.target.x - this.ball.x;
+
+                        const angleToTarget = Math.atan2(diffY, diffX) / (Math.PI / 180);
+                        this.hitBall(pm.power(), angleToTarget + Math.randomRange(-acc, acc));
                         pm.clear();
+                        if (this.target) controller.moveSprite(this.target);
                     }
                 }
             });
 
             controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
                 PowerMeter.getInstance().clear();
+                if (this.target) controller.moveSprite(this.target)
             });
         }
 
@@ -69,6 +82,10 @@ namespace golf {
 
             if (this.hole) {
                 this.hole.destroy();
+            }
+
+            if (this.target) {
+                this.target.destroy();
             }
 
             scene.setBackgroundColor(4)
@@ -94,6 +111,8 @@ namespace golf {
             this.hole._x = Fx8(c.holePosition.x - 2);
             this.hole._y = Fx8(c.holePosition.y - 2);
 
+            this.createTarget();
+
             this.strokeCount = 0;
             this.putting = true;
             this.loadedCourse = c;
@@ -101,6 +120,28 @@ namespace golf {
 
         onUpdate() {
             this.applyFriction();
+        }
+
+        createTarget() {
+            this.target = sprites.create(img`
+                . . . f f f . . .
+                . . . f 1 f . . .
+                . . . f 1 f . . .
+                f f f f 1 f f f f
+                . f 1 1 1 1 1 f .
+                . . f 1 1 1 f . .
+                . . . f 1 f . . .
+                . . . . f . . . .
+            `);
+
+            this.target.setFlag(SpriteFlag.StayInScreen, true);
+            this.target.setFlag(SpriteFlag.Ghost, true);
+            this.target.flags |= SpriteStateFlag.NoCollide;
+            if (this.ball) {
+                this.target.bottom = this.ball.y;
+                this.target.left = this.ball.x + 5;
+            }
+            controller.moveSprite(this.target);
         }
 
         protected drawHUD(target: Image, camera: scene.Camera) {
