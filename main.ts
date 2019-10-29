@@ -34,11 +34,14 @@ function hitBall(speed: number, angleDegrees: number) {
 let angle = 0;
 
 game.onUpdate(function () {
-    if (controller.left.isPressed()) {
-        angle--;
-    }
-    if (controller.right.isPressed()) {
-        angle++;
+    const pm = PowerMeter.getInstance();
+    if (!pm.active()) {
+        if (controller.left.isPressed()) {
+            angle--;
+        }
+        if (controller.right.isPressed()) {
+            angle++;
+        }
     }
 
     // Apply friction
@@ -61,6 +64,23 @@ game.onShade(function () {
     screen.drawLine(ball.x, ball.y, ball.x + 15 * Math.cos(angle * (Math.PI / 180)), ball.y + 15 * Math.sin(angle * (Math.PI / 180)), 1)
 })
 
-controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
-    hitBall(60, angle)
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    const pm = PowerMeter.getInstance();
+    if (ball.vx || ball.vy || pm.finished()) {
+        return;
+    }
+    if (!pm.active()) {
+        pm.start();
+    } else if (!pm.finished()) {
+        pm.action();
+        if (pm.finished()) {
+            const acc = pm.accuracy()
+            hitBall(pm.power(), angle + Math.randomRange(-acc, acc));
+            pm.clear();
+        }
+    }
+});
+
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    PowerMeter.getInstance().clear();
 });

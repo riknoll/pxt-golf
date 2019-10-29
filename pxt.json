@@ -9,6 +9,8 @@
         "README.md",
         "main.ts",
         "physics.ts",
+        "powermeter.ts",
+        "constants.ts",
         "vector.ts"
     ],
     "testFiles": [
