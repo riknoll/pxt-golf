@@ -1,6 +1,12 @@
 namespace golf {
     export class Course {
+        _onLoad: () => void;
+        
         constructor(public map: Image, public puttPosition: Point, public holePosition: Point, public par: number) {
+        }
+
+        onLoad(cb: () => void) {
+            this._onLoad = cb;
         }
     }
 
@@ -93,6 +99,8 @@ namespace golf {
 
             this.hole._x = Fx8(c.holePosition.x - 2);
             this.hole._y = Fx8(c.holePosition.y - 2);
+
+            if (c._onLoad) c._onLoad();
 
             this.strokeCount = 0;
             this.putting = true;
