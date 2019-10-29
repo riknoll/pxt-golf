@@ -288,6 +288,12 @@ namespace golf {
         overlapsSprite(s: Sprite) {
             return overlaps(s, Fx.toInt(this.left), Fx.toInt(this.top), this.map.width << this.scale, this.map.height << this.scale);
         }
+
+        destroy() {
+            const scene = game.currentScene();
+            scene.allSprites.removeElement(this);
+            SlopePhysics.getInstance().removePlatform(this);
+        }
     }
 
     export class SlopePhysics extends PhysicsEngine {
@@ -329,6 +335,14 @@ namespace golf {
 
         addPlatform(platform: Platform) {
             this.platforms.push(platform);
+        }
+
+        removePlatform(platform: Platform) {
+            this.platforms.removeElement(platform);
+        }
+        
+        clearPlatforms() {
+            this.platforms.slice().forEach(p => p.destroy());
         }
 
         removeSprite(sprite: Sprite) {

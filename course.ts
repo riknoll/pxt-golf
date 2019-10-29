@@ -99,6 +99,8 @@ namespace golf {
 
             scene.setBackgroundColor(4)
             enableSlopePhysics(c.map);
+            
+            SlopePhysics.getInstance().clearPlatforms();
 
             this.ball = sprites.create(img`
                 1 1 1
