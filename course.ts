@@ -19,16 +19,23 @@ namespace golf {
 
             game.onUpdate(() => this.onUpdate());
             sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, () => this.holeIn());
-            this.hud = scene.createRenderable(0, (target, camera) => this.drawHUD(target, camera));
+            this.hud = scene.createRenderable(
+                scene.HUD_Z,
+                (target, camera) => this.drawHUD(target, camera),
+                () => !PowerMeter.getInstance().active()
+            );
 
             let angle = 0;
 
             game.onShade(function () {
-                if (controller.left.isPressed()) {
-                    angle--;
-                }
-                if (controller.right.isPressed()) {
-                    angle++;
+                const pm = PowerMeter.getInstance();
+                if (!pm.active()) {
+                    if (controller.left.isPressed()) {
+                        angle--;
+                    }
+                    if (controller.right.isPressed()) {
+                        angle++;
+                    }
                 }
                 screen.drawLine(this.ball.x, this.ball.y, this.ball.x + 15 * Math.cos(angle * (Math.PI / 180)), this.ball.y + 15 * Math.sin(angle * (Math.PI / 180)), 1)
             })
