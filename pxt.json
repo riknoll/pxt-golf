@@ -9,7 +9,8 @@
         "README.md",
         "main.ts",
         "physics.ts",
-        "vector.ts"
+        "vector.ts",
+        "course.ts"
     ],
     "testFiles": [
         "test.ts"
