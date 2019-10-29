@@ -34,7 +34,24 @@ namespace golf {
             })
 
             controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
-                this.hitBall(60, angle)
+                const pm = PowerMeter.getInstance();
+                if (!this.putting) {
+                    return;
+                }
+                if (!pm.active()) {
+                    pm.start();
+                } else if (!pm.finished()) {
+                    pm.action();
+                    if (pm.finished()) {
+                        const acc = pm.accuracy()
+                        this.hitBall(pm.power(), angle + Math.randomRange(-acc, acc));
+                        pm.clear();
+                    }
+                }
+            });
+
+            controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+                PowerMeter.getInstance().clear();
             });
         }
 
