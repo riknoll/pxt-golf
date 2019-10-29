@@ -68,77 +68,81 @@ class PowerMeter {
 
         this.startPoint = this.currentPower;
         this.powerChangeRate = Math.abs(this.powerChangeRate);
+        this.currentPower = Math.randomRange(10, 30);
 
-        this.renderable = scene.createRenderable(zindex.POWER_BAR, (target, camera) => {
-            const base = img`
-                . . . . a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a . . . .
-                . . a a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a a . .
-                . a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a .
-                a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a
-                a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a
-                a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a
-                a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a
-                a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a
-                . a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a .
-                . . a a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a a . .
-                . . . . a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a . . . .
-            `;
-            const barWidth = base.width - 2;
-            const padding = (screen.width - base.width) >> 1;
+        this.renderable = scene.createRenderable(
+            zindex.POWER_BAR,
+            (target, camera) => {
+                const base = img`
+                    . . . . a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a . . . .
+                    . . a a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a a . .
+                    . a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a .
+                    a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a
+                    a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a
+                    a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a
+                    a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a
+                    a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a
+                    . a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a .
+                    . . a a a d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d a a a . .
+                    . . . . a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a . . . .
+                `;
+                const barWidth = base.width - 2;
+                const padding = (screen.width - base.width) >> 1;
 
-            const heightAtCol = (column: number) => {
-                column |= 0;
-                if (column <= 0 || column > barWidth) {
-                    return -1;
+                const heightAtCol = (column: number) => {
+                    column |= 0;
+                    if (column <= 0 || column > barWidth) {
+                        return -1;
+                    }
+                    switch (column) {
+                        case 1:
+                        case base.width - 2:
+                            return 4;
+                        case 2:
+                        case base.width - 3:
+                            return 3;
+                        case 3:
+                        case base.width - 4:
+                        case 4:
+                        case base.width - 5:
+                            return 2;
+                        default:
+                            return 1;
+                    }
                 }
-                switch (column) {
-                    case 1:
-                    case base.width - 2:
-                        return 4;
-                    case 2:
-                    case base.width - 3:
-                        return 3;
-                    case 3:
-                    case base.width - 4:
-                    case 4:
-                    case base.width - 5:
-                        return 2;
-                    default:
-                        return 1;
+
+                const drawPct = (pct: number, color: number) => {
+                    const col = (barWidth * pct) / 100;
+                    const padding = heightAtCol(col);
+
+                    if (padding != -1) {
+                        base.drawLine(
+                            col,
+                            padding,
+                            col,
+                            base.height - padding - 1,
+                            color
+                        );
+                    }
                 }
-            }
 
-            const drawPct = (pct: number, color: number) => {
-                const col = (barWidth * pct) / 100;
-                const padding = heightAtCol(col);
+                drawPct(this.startPoint, 0xC);
 
-                if (padding != -1) {
-                    base.drawLine(
-                        col,
-                        padding,
-                        col,
-                        base.height - padding - 1,
-                        color
-                    );
+                if (this.placedPoint != null) {
+                    drawPct(this.placedPoint, 0xC);
                 }
+
+                if (this.currentPower != null) {
+                    drawPct(this.currentPower, 0x1);
+                }
+
+                screen.drawTransparentImage(
+                    base,
+                    padding,
+                    screen.height - padding - base.height
+                );
             }
-
-            drawPct(this.startPoint, 0xC);
-
-            if (this.placedPoint != null) {
-                drawPct(this.placedPoint, 0xC);
-            }
-
-            if (this.currentPower != null) {
-                drawPct(this.currentPower, 0x1);
-            }
-
-            screen.drawTransparentImage(
-                base,
-                padding,
-                screen.height - padding - base.height
-            );
-        });
+        );
     }
 
     clear() {
