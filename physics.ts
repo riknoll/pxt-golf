@@ -395,7 +395,7 @@ namespace golf {
 
                 for (const p of this.platforms) {
                     if (collision(s, xComp, yComp, this.scale, p.map, Fx.toInt(p.left), Fx.toInt(p.top))) {
-                        if (yComp > 0) p.addRider(s);
+                        // if (yComp > 0) p.addRider(s);
                         break;
                     }
 
