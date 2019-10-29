@@ -10,7 +10,9 @@
         "main.ts",
         "physics.ts",
         "vector.ts",
-        "course.ts"
+        "course.ts",
+        "powermeter.ts",
+        "constants.ts"
     ],
     "testFiles": [
         "test.ts"
