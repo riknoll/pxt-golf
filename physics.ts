@@ -654,13 +654,25 @@ namespace golf {
         return Math.max(horizontalMap.getPixel(offsetY, row) - offsetX, 0);
     }
 
+    export function heading(s: Sprite) {
+        return Math.atan2(s.vy, s.vx)
+    }
+
+    export function speed(s: Sprite) {
+        return Math.sqrt(s.vy * s.vy + s.vx * s.vx);
+    }
 
     /** move a single sprite **/
     function collision(s: Sprite, xComp: number, yComp: number, scale: number, map: Image, ox: number, oy: number, dontMove = false) {
         if (s.flags & SpriteStateFlag.NoCollide) return false;
         let didCollide: number;
-        horizontalCollision(s, xComp, yComp, scale, map, ox, oy, dontMove);
+        didCollide = horizontalCollision(s, xComp, yComp, scale, map, ox, oy, dontMove);
+
+        if (didCollide) reflect(s, didCollide, true);
+
         didCollide = verticalCollision(s, yComp, scale, map, ox, oy, dontMove);
+
+        if (didCollide) reflect(s, didCollide, false);
         // if (xComp === 0 || Math.abs(xComp) < Math.abs(yComp)) {
         // }
         // else {
@@ -672,6 +684,7 @@ namespace golf {
 
     function verticalCollision(s: Sprite, yComp: number, scale: number, map: Image, ox: number, oy: number, dontMove: boolean) {
         let offset: number;
+        let collideTile: number;
 
         let leftAligned = alignToScale(s.left - ox, scale);
         let rightAligned = alignToScale(s.right - ox - 1, scale);
@@ -697,9 +710,10 @@ namespace golf {
             if (offset) {
                 if (!dontMove) {
                     s._y = Fx8(s.top - offset)
-                    s.vy = -s.vy;
                     s.flags |= SpriteStateFlag.CollisionBottom
                 }
+
+                collideTile = map.getPixel(rightAligned >> scale, rowAligned >> scale) || map.getPixel(leftAligned >> scale, rowAligned >> scale)
             }
 
             // Test to see if we are 1 pixel above the ground but not
@@ -742,16 +756,17 @@ namespace golf {
             if (offset) {
                 if (!dontMove) {
                     s._y = Fx8(s.top + offset - 2)
-                    s.vy = -s.vy;
                 }
+                collideTile = map.getPixel(rightAligned >> scale, rowAligned >> scale) || map.getPixel(leftAligned >> scale, rowAligned >> scale)
             }
         }
 
-        return offset;
+        return collideTile;
     }
 
     function horizontalCollision(s: Sprite, xComp: number, yComp: number, scale: number, map: Image, ox: number, oy: number, dontMove: boolean) {
         let offset: number;
+        let collideTile: number;
 
         // First check horizontal movement and bounce out of walls. Check
         // using the vertical center line of the sprite
@@ -772,8 +787,8 @@ namespace golf {
             if (offset) {
                 if (!dontMove) {
                     s._x = Fx8(s.left - offset);
-                    s.vx = -s.vx;
                 }
+                collideTile = map.getPixel(rightAligned >> scale, rowAligned >> scale) || map.getPixel(leftAligned >> scale, rowAligned >> scale)
             }
         }
         if (xComp < 0) {
@@ -787,12 +802,67 @@ namespace golf {
             if (offset) {
                 if (!dontMove) {
                     s._x = Fx8(s.left + offset)
-                    s.vx = -s.vx;
                 }
+                collideTile = map.getPixel(rightAligned >> scale, rowAligned >> scale) || map.getPixel(leftAligned >> scale, rowAligned >> scale)
             }
         }
 
-        return offset;
+        return collideTile;
+    }
+
+    function reflect(sprite: Sprite, collidedWith: number, horizontal: boolean) {
+        let normal: Point;
+
+        switch (collidedWith) {
+            // Empty
+            case 0:
+                return;
+
+            // Solid
+            case 1:
+            // Bottom half solid
+            case 2:
+            // Top half solid
+            case 3:
+                if (horizontal) sprite.vx = -sprite.vx;
+                else sprite.vy = -sprite.vy;
+                return;
+
+            // Steep slope (bottom left)
+            case 4: normal = new Point(1, -1); break;
+            // Steep slope (bottom right)
+            case 5: normal = new Point(-1, -1); break;
+            
+            // Slight slope (bottom left)
+            case 6:
+            // Slight slope (bottom left, upper half)
+            case 8: normal = new Point(0.5, -1); break;
+            
+            // Slight slope (bottom right)
+            case 7:
+            // Slight slope (bottom right, upper half)
+            case 9: normal = new Point(-0.5, -1); break;
+
+            // Steep slope (top left)
+            case 10: normal = new Point(1, 1); break;
+            // Steep slope (top right)
+            case 11: normal = new Point(-1, 1); break;
+
+            // Slight slope (top left)
+            case 12:
+            // Slight slope (top left, lower half)
+            case 14: normal = new Point(0.5, 1); break;
+
+            // Slight slope (top right)
+            case 13:
+            // Slight slope (top right, lower half)
+            case 15: normal = new Point(-0.5, 1); break;
+        }
+
+        
+        const reflected = reflectVector(new Point(sprite.vx, sprite.vy), normalize(normal));
+        sprite.vx = reflected.x;
+        sprite.vy = reflected.y;
     }
 
     function clearAnimationState(flags: number) {

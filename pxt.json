@@ -8,7 +8,8 @@
     "files": [
         "README.md",
         "main.ts",
-        "physics.ts"
+        "physics.ts",
+        "vector.ts"
     ],
     "testFiles": [
         "test.ts"
