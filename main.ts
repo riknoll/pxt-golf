@@ -47,4 +47,6 @@ testCourse.onLoad(function () {
 })
 
 const g = new golf.Game();
-g.loadCourse(testCourse2);
+g.addCourse(testCourse);
+g.addCourse(testCourse2);
+g.loadCourse(0)

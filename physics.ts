@@ -343,6 +343,7 @@ namespace golf {
         
         clearPlatforms() {
             this.platforms.slice().forEach(p => p.destroy());
+            this.platforms = [];
         }
 
         removeSprite(sprite: Sprite) {

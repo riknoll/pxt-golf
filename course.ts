@@ -17,12 +17,15 @@ namespace golf {
         protected strokeCount: number;
         protected putting: boolean;
         protected hud: scene.Renderable;
-        protected loadedCourse: Course;
+
+        protected courses: Course[];
+        protected loadedIndex: number;
 
         protected dialog: game.Dialog;
 
         constructor() {
             this.putting = false;
+            this.courses = [];
 
             game.onUpdate(() => this.onUpdate());
             sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, () => this.holeIn());
@@ -84,7 +87,12 @@ namespace golf {
             }
         }
 
-        loadCourse(c: Course) {
+        addCourse(c: Course) {
+            this.courses.push(c);
+        }
+
+        loadCourse(index: number) {
+            const c = this.courses[index];
             if (this.ball) {
                 this.ball.destroy();
             }
@@ -128,7 +136,7 @@ namespace golf {
 
             this.strokeCount = 0;
             this.putting = true;
-            this.loadedCourse = c;
+            this.loadedIndex = index;
         }
 
         onUpdate() {
@@ -162,7 +170,7 @@ namespace golf {
 
         protected drawHUD(target: Image, camera: scene.Camera) {
             if (this.strokeCount) screen.print("" + this.strokeCount, 1, target.height - 9)
-            if (this.loadedCourse) screen.print("PAR " + this.loadedCourse.par, target.width - 32, target.height - 9);
+            if (this.loadedIndex != null) screen.print("PAR " + this.courses[this.loadedIndex].par, target.width - 32, target.height - 9);
 
             if (this.dialog) screen.drawImage(this.dialog.image,
                 (target.width >> 1) - (this.dialog.image.width >> 1),
@@ -206,10 +214,17 @@ namespace golf {
 
         protected holeIn() {
             const score = this.strokeCount;
-            const descriptor = getScoreDescriptor(score, this.loadedCourse.par);
+            const descriptor = getScoreDescriptor(score, this.courses[this.loadedIndex].par);
 
             this.hole.destroy();
             game.splash(descriptor);
+
+            if (this.loadedIndex >= this.courses.length - 1) {
+                game.over();
+            }
+            else {
+                this.loadCourse(this.loadedIndex + 1)
+            }
         }
     }
 

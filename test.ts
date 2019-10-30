@@ -20,6 +20,6 @@ namespace jwunderl {
             `, new golf.Point(24, 88), new golf.Point(screen.width - 16, 60), 3);
 
         const g2 = new golf.Game();
-        g2.loadCourse(testCourse2);
+        g2.addCourse(testCourse2);
     }
 }
