@@ -682,7 +682,10 @@ namespace golf {
         let didCollide: number;
         didCollide = horizontalCollision(s, xComp, yComp, scale, map, ox, oy, dontMove);
 
-        if (didCollide) reflect(s, didCollide, true);
+        if (didCollide) {
+            reflect(s, didCollide, true);
+            return didCollide;
+        }
 
         didCollide = verticalCollision(s, yComp, scale, map, ox, oy, dontMove);
 

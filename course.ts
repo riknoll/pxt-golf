@@ -193,7 +193,7 @@ namespace golf {
                 this.onPuttingStart();
             }
             else {
-                speed -= 0.15;
+                speed -= 0.5;
             }
 
             this.ball.vx = speed * Math.cos(heading);
