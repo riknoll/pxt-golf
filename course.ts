@@ -121,6 +121,7 @@ namespace golf {
 
             this.hole._x = Fx8(c.holePosition.x - 2);
             this.hole._y = Fx8(c.holePosition.y - 2);
+            this.hole.flags |= SpriteStateFlag.NoCollide;
 
             this.createTarget();
             if (c._onLoad) c._onLoad();
